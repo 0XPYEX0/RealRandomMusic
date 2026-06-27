@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- 查询所有已安装应用 -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
+
+    <!-- 通知权限 -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"/>
+
+    <application
+            android:name=".RrmApp"
+            android:allowBackup="true"
+            android:dataExtractionRules="@xml/data_extraction_rules"
+            android:fullBackupContent="@xml/backup_rules"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name"
+            android:roundIcon="@mipmap/ic_launcher_round"
+            android:supportsRtl="true"
+            android:theme="@style/Theme.RealRandomMusic"
+            tools:targetApi="31">
+
+        <!-- LiveUpdate 广播监听服务 -->
+        <service
+                android:name=".NoticeService"
+                android:enabled="true"
+                android:exported="false"
+                android:foregroundServiceType="mediaPlayback"/>
+
+        <!-- 音乐通知监听服务（事件驱动，无需轮询） -->
+        <service
+                android:name=".util.MusicNotificationService"
+                android:enabled="true"
+                android:exported="false"
+                android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService"/>
+            </intent-filter>
+        </service>
+
+
+        <activity
+                android:name=".activity.MainActivity"
+                android:exported="true"
+                android:label="@string/app_name"
+                android:theme="@style/Theme.RealRandomMusic">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- 设置界面 -->
+        <activity
+                android:name=".activity.SettingsActivity"
+                android:exported="false"
+                android:label="设置"
+                android:theme="@style/Theme.RealRandomMusic"/>
+
+        <!-- 选择监听的应用 -->
+        <activity
+                android:name=".activity.AppSelectActivity"
+                android:exported="false"
+                android:label="选择监听的应用"
+                android:theme="@style/Theme.RealRandomMusic"/>
+
+        <!-- 调试界面 -->
+        <activity
+                android:name=".activity.DebugActivity"
+                android:exported="false"
+                android:label="通知调试"
+                android:theme="@style/Theme.RealRandomMusic"/>
+    </application>
+
+</manifest>

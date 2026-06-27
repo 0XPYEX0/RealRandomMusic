@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="108dp"
+        android:height="108dp"
+        android:viewportWidth="108"
+        android:viewportHeight="108">
+
+    <!-- 橙色旋转箭头：外圈弧线 -->
+    <path
+            android:fillColor="@null"
+            android:strokeColor="#FF9800"
+            android:strokeWidth="5"
+            android:strokeLineCap="round"
+            android:pathData="M 54,12 C 77,12 96,31 96,54 C 96,77 77,96 54,96 C 21,96 10,34 18,16"/>
+
+    <!-- 箭头尖 -->
+    <path
+            android:fillColor="#FF9800"
+            android:pathData="M 14,12 L 20,10 L 12,18 L 20,26 L 20,12 Z"/>
+
+    <!-- 音符 ♫：左符头（实心椭圆，像小脚） -->
+    <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M 34,68 C 34,64 42,64 42,68 C 42,72 34,72 34,68 Z"/>
+    <!-- 音符：左竖线 -->
+    <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M 38,40 L 38,68 L 41,68 L 41,40 Z"/>
+
+    <!-- 音符：右符头（实心椭圆，像小脚） -->
+    <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M 64,70 C 64,66 72,66 72,70 C 72,74 64,74 64,70 Z"/>
+    <!-- 音符：右竖线 -->
+    <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M 68,44 L 68,70 L 71,70 L 71,44 Z"/>
+
+    <!-- 音符：顶部横梁 (beam)，连接两根竖线 -->
+    <path
+            android:fillColor="#FFFFFF"
+            android:pathData="M 38,40 L 71,44 L 71,48 L 38,44 Z"/>
+
+</vector>
