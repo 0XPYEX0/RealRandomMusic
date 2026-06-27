@@ -2,9 +2,9 @@
 
 <p align="center"><i>🤖 Code by DeepSeek V4 Pro · Idea by <a href="https://github.com/XPYEX">XPYEX</a></i></p>
 
-真正的随机播放 —— 自动检测并跳过重复歌曲，让音乐播放器真正做到随机。
-反正我的App的随机播放老是重复，，，
-我就是要0重复！
+真正的随机播放 —— 自动检测并跳过重复歌曲，让音乐播放器真正做到随机<br>
+反正我的App的随机播放老是重复，，，<br>
+我就是要0重复！<br>
 
 ## 功能
 
