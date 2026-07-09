@@ -157,6 +157,7 @@ fun HyperOsPrimaryButton(
 fun HyperOsSecondaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    containerColor: Color = Color.Transparent,
     content: @Composable RowScope.() -> Unit,
 ) {
     OutlinedButton(
@@ -167,6 +168,7 @@ fun HyperOsSecondaryButton(
         shape = MaterialTheme.shapes.extraLarge,
         colors = ButtonDefaults.outlinedButtonColors(
             contentColor = MaterialTheme.colorScheme.primary,
+            containerColor = containerColor,
         ),
         content = content,
     )

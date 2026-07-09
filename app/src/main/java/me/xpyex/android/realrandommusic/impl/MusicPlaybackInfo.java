@@ -3,36 +3,37 @@ package me.xpyex.android.realrandommusic.impl;
 import android.media.MediaMetadata;
 import android.media.session.PlaybackState;
 import java.util.Objects;
+import lombok.AccessLevel;
 import lombok.Getter;
 
 /**
  * 音乐播放信息 — 从媒体通知中提取的全部有用数据
  */
-@Getter
+@Getter(value = AccessLevel.PUBLIC)
 public class MusicPlaybackInfo {
 
     // ── 歌曲信息 ──
-    private final String title;         // 歌名
-    private final String artist;        // 歌手
-    private final String album;         // 专辑
-    private final long durationMs;      // 总时长（毫秒）
+    public final String title;         // 歌名
+    public final String artist;        // 歌手
+    public final String album;         // 专辑
+    public final long durationMs;      // 总时长（毫秒）
 
     // ── 播放状态 ──
-    private final boolean isPlaying;    // 是否正在播放
-    private final long positionMs;      // 当前播放进度（毫秒）
-    private final float playbackSpeed;  // 播放速度（1.0 = 正常）
-    private final int stateCode;        // PlaybackState 原始状态码
+    public final boolean isPlaying;    // 是否正在播放
+    public final long positionMs;      // 当前播放进度（毫秒）
+    public final float playbackSpeed;  // 播放速度（1.0 = 正常）
+    public final int stateCode;        // PlaybackState 原始状态码
 
     // ── 来源信息 ──
-    private final String packageName;   // 播放器包名
-    private final String appName;       // 播放器应用名（可能为空）
-    private final long eventTimestamp;  // 事件时间戳
+    public final String packageName;   // 播放器包名
+    public final String appName;       // 播放器应用名（可能为空）
+    public final long eventTimestamp;  // 事件时间戳
 
     // ── 附加字段（不同播放器可能提供不同内容）──
-    private final String mediaId;       // 媒体 ID（如果有）
-    private final int trackNumber;      // 音轨号（如果有）
+    public final String mediaId;       // 媒体 ID（如果有）
+    public final int trackNumber;      // 音轨号（如果有）
 
-    private MusicPlaybackInfo(Builder builder) {
+    public MusicPlaybackInfo(Builder builder) {
         this.title = builder.title;
         this.artist = builder.artist;
         this.album = builder.album;
@@ -125,19 +126,19 @@ public class MusicPlaybackInfo {
     }
 
     public static class Builder {
-        private String title;
-        private String artist;
-        private String album;
-        private long durationMs;
-        private boolean isPlaying;
-        private long positionMs;
-        private float playbackSpeed = 1.0f;
-        private int stateCode;
-        private String packageName;
-        private String appName;
-        private long eventTimestamp = System.currentTimeMillis();
-        private String mediaId;
-        private int trackNumber;
+        public String title;
+        public String artist;
+        public String album;
+        public long durationMs;
+        public boolean isPlaying;
+        public long positionMs;
+        public float playbackSpeed = 1.0f;
+        public int stateCode;
+        public String packageName;
+        public String appName;
+        public long eventTimestamp = System.currentTimeMillis();
+        public String mediaId;
+        public int trackNumber;
 
         /**
          * 从 MediaMetadata 填充歌曲信息

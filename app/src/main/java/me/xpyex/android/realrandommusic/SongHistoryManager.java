@@ -4,10 +4,8 @@ import android.content.Context;
 import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Comparator;
@@ -18,7 +16,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import lombok.Getter;
-import me.xpyex.android.realrandommusic.impl.SongPlayRecord;
+import me.xpyex.android.realrandommusic.data.PlayedData;
+import me.xpyex.android.realrandommusic.data.SongPlayRecord;
 import me.xpyex.android.realrandommusic.util.ConfigManager;
 
 /**
@@ -41,6 +40,34 @@ public class SongHistoryManager {
     @Getter
     public int skippedCount = 0;
 
+    // ── 当前播放标识（启动后放行用）──
+    private String currentSongIdentifier = null;
+
+    /**
+     * 获取上次保存时正在播放的歌曲标识，用于启动后判断是否放行。
+     */
+    public String getCurrentSongIdentifier() {
+        return currentSongIdentifier;
+    }
+
+    /**
+     * 记录当前正在播放的歌曲标识，持久化到 JSON。
+     */
+    public void setCurrentSongIdentifier(String identifier) {
+        this.currentSongIdentifier = identifier;
+        saveHistory();
+    }
+
+    // ── 调试信息 ──
+    @Getter
+    public String lastLoadError = null;
+    @Getter
+    public String lastSaveError = null;
+    @Getter
+    public long lastSaveTime = 0;
+    @Getter
+    public long fileSize = 0;
+
     public SongHistoryManager(Context context, ConfigManager configManager) {
         this.context = context;
         this.configManager = configManager;
@@ -52,27 +79,42 @@ public class SongHistoryManager {
     private Map<String, SongPlayRecord> loadHistory() {
         File jsonFile = new File(context.getFilesDir(), JSON_FILE);
         if (!jsonFile.exists()) {
+            lastLoadError = null;
+            fileSize = 0;
             return new HashMap<>();
         }
+        fileSize = jsonFile.length();
         try {
             String json = String.join("\n", Files.readAllLines(jsonFile.toPath(), StandardCharsets.UTF_8));
-            Type type = new TypeToken<Map<String, SongPlayRecord>>() {
-            }.getType();
-            Map<String, SongPlayRecord> songs = gson.fromJson(json, type);
+            PlayedData playedData = gson.fromJson(json, PlayedData.class);
+            if (playedData != null) {
+                currentSongIdentifier = playedData.getCurrent();
+            }
+            Map<String, SongPlayRecord> songs = playedData != null ? playedData.getSongs() : null;
+            lastLoadError = null;
             return songs != null ? songs : new HashMap<>();
         } catch (Exception e) {
-            Log.e(TAG, "加载历史记录失败: " + e.getMessage());
+            lastLoadError = (e.getMessage() != null) ? e.getMessage() : e.getClass().getSimpleName();
+            Log.e(TAG, "加载历史记录失败: " + lastLoadError);
             return new HashMap<>();
         }
     }
 
     private void saveHistory() {
         saveExecutor.execute(() -> {
-            String json = gson.toJson(playedSongs);
+            PlayedData data = PlayedData.of()
+                .setCurrent(currentSongIdentifier)
+                .setSongs(new HashMap<>(playedSongs));
+            String json = gson.toJson(data);
+            File file = new File(context.getFilesDir(), JSON_FILE);
             try {
-                Files.write(new File(context.getFilesDir(), JSON_FILE).toPath(), json.getBytes(StandardCharsets.UTF_8));
+                Files.write(file.toPath(), json.getBytes(StandardCharsets.UTF_8));
+                lastSaveTime = System.currentTimeMillis();
+                fileSize = file.length();
+                lastSaveError = null;
             } catch (IOException e) {
-                Log.e(TAG, "保存历史记录失败: " + e.getMessage());
+                lastSaveError = (e.getMessage() != null) ? e.getMessage() : e.getClass().getSimpleName();
+                Log.e(TAG, "保存历史记录失败: " + lastSaveError);
             }
         });
     }

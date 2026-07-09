@@ -18,6 +18,7 @@ public class ConfigManager {
     private static final String KEY_MAX_PLAY_COUNT = "MaxPlayCount";
     private static final String KEY_REPEAT_INTERVAL_SECONDS = "RepeatIntervalSeconds";
     private static final String KEY_TOTAL_PLAYLIST_SIZE = "TotalPlaylistSize";
+    private static final String KEY_PAUSED = "Paused";
 
     private final SharedPreferences preferences;
 
@@ -137,5 +138,19 @@ public class ConfigManager {
      */
     public void setTotalPlaylistSize(int size) {
         preferences.edit().putInt(KEY_TOTAL_PLAYLIST_SIZE, size).apply();
+    }
+
+    /**
+     * 获取暂停状态（持久化，重启后保持）
+     */
+    public boolean isPaused() {
+        return preferences.getBoolean(KEY_PAUSED, false);
+    }
+
+    /**
+     * 设置暂停状态（持久化，重启后保持）
+     */
+    public void setPaused(boolean paused) {
+        preferences.edit().putBoolean(KEY_PAUSED, paused).apply();
     }
 }

@@ -21,4 +21,4 @@
 #-renamesourcefileattribute SourceFile
 
 # Gson 序列化的数据类，保持字段名不被混淆
--keep class me.xpyex.android.realrandommusic.impl.SongPlayRecord { *; }
+-keep class me.xpyex.android.realrandommusic.data.** { *; }

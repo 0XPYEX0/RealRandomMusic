@@ -26,7 +26,6 @@ public class RrmApp extends Application {
     public SongHistoryManager historyManager;
 
     private boolean paused;
-    private boolean firstSongAfterBoot = true;
     private String lastProcessedIdentifier;
 
     public boolean isPaused() {
@@ -35,6 +34,7 @@ public class RrmApp extends Application {
 
     public void setPaused(boolean paused) {
         this.paused = paused;
+        configManager.setPaused(paused);
     }
 
     @Override
@@ -45,6 +45,9 @@ public class RrmApp extends Application {
         // 初始化
         configManager = new ConfigManager(this);
         historyManager = new SongHistoryManager(this, configManager);
+
+        // 恢复暂停状态
+        paused = configManager.isPaused();
 
         // 串联：收到切歌事件 → 查重 → 如重复则跳过
         MusicNotificationService.addListener(new MusicNotificationService.MusicListener() {
@@ -94,20 +97,21 @@ public class RrmApp extends Application {
         boolean isRepeat = historyManager.checkAndRecord(identifier);
 
         if (isRepeat) {
-            // 启动后第一首歌放行（系统杀后自启时当前歌并非用户主动切到的）
-            if (firstSongAfterBoot) {
-                firstSongAfterBoot = false;
-                Log.w(TAG, "启动后第一首为重复但放行: " + identifier);
+            // 启动后第一首歌放行（与上次保存的 current 一致说明是被杀后自启，并非用户主动切歌）
+            if (identifier.equals(historyManager.getCurrentSongIdentifier())) {
+                Log.w(TAG, "启动后当前歌曲为重复但放行: " + identifier);
             } else {
                 Log.w(TAG, "重复歌曲，自动跳过: " + identifier);
                 MusicNotificationService.skipToNext(info.getPackageName());
 
-                // 调试模式下发通知
                 if (configManager.isDebugMode()) {
                     sendSkipNotification(identifier);
                 }
             }
         }
+
+        // 记录当前歌曲标识，下次启动时用于判断
+        historyManager.setCurrentSongIdentifier(identifier);
 
         // 更新前台服务通知
         sendUpdateBroadcast(info);

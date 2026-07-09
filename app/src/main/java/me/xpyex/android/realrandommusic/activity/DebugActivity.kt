@@ -22,10 +22,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import me.xpyex.android.realrandommusic.RrmApp
 import me.xpyex.android.realrandommusic.ui.HyperOsSectionCard
 import me.xpyex.android.realrandommusic.ui.HyperOsTopBar
 import me.xpyex.android.realrandommusic.ui.theme.RealRandomMusicTheme
 import me.xpyex.android.realrandommusic.util.MusicNotificationService
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class DebugActivity : ComponentActivity() {
 
@@ -102,6 +106,68 @@ fun DebugScreen() {
                     if (serviceAlive) "Service: 运行中" else "Service: 可能未启动 — 检查通知权限",
                     style = MaterialTheme.typography.bodySmall,
                 )
+            }
+
+            // ── 历史记录状态卡片 ──
+            val history = remember { RrmApp.instance.historyManager }
+            val loadError = history.lastLoadError
+            val saveError = history.lastSaveError
+            val dateFormat = remember { SimpleDateFormat("MM-dd HH:mm:ss", Locale.getDefault()) }
+
+            HyperOsSectionCard(
+                containerColor = if (loadError != null || saveError != null)
+                    MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.3f)
+                else
+                    MaterialTheme.colorScheme.surface,
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(
+                        "历史记录 (played_songs.json)",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(
+                        "已记录: ${history.playedCount} 首  |  已跳过: ${history.skippedCount} 次",
+                        fontSize = 12.sp,
+                        fontFamily = FontFamily.Monospace,
+                    )
+                    Text(
+                        "文件大小: ${if (history.fileSize > 0) "${history.fileSize / 1024} KB" else "无文件"}",
+                        fontSize = 12.sp,
+                        fontFamily = FontFamily.Monospace,
+                    )
+                    if (history.lastSaveTime > 0) {
+                        Text(
+                            "最近保存: ${dateFormat.format(Date(history.lastSaveTime))}",
+                            fontSize = 12.sp,
+                            fontFamily = FontFamily.Monospace,
+                        )
+                    }
+                    if (loadError != null) {
+                        Text(
+                            "⚠ 加载失败: $loadError",
+                            fontSize = 12.sp,
+                            fontFamily = FontFamily.Monospace,
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    }
+                    if (saveError != null) {
+                        Text(
+                            "⚠ 保存失败: $saveError",
+                            fontSize = 12.sp,
+                            fontFamily = FontFamily.Monospace,
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    }
+                    if (loadError == null && saveError == null) {
+                        Text(
+                            "✓ JSON 读写正常",
+                            fontSize = 12.sp,
+                            fontFamily = FontFamily.Monospace,
+                            color = MaterialTheme.colorScheme.tertiary,
+                        )
+                    }
+                }
             }
 
             Text(

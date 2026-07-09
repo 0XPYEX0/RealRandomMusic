@@ -1,4 +1,4 @@
-package me.xpyex.android.realrandommusic.impl;
+package me.xpyex.android.realrandommusic.data;
 
 import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
