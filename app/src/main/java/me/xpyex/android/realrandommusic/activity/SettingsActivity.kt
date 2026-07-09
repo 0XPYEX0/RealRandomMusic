@@ -4,41 +4,21 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import me.xpyex.android.realrandommusic.ui.BackNavigationIcon
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import me.xpyex.android.realrandommusic.ui.*
 import me.xpyex.android.realrandommusic.ui.theme.RealRandomMusicTheme
 import me.xpyex.android.realrandommusic.util.ConfigManager
 import me.xpyex.android.realrandommusic.util.toIntOrDefault
@@ -59,7 +39,6 @@ class SettingsActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(configManager: ConfigManager) {
     val context = LocalContext.current
@@ -92,10 +71,7 @@ fun SettingsScreen(configManager: ConfigManager) {
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("设置") },
-                navigationIcon = { BackNavigationIcon() }
-            )
+            HyperOsTopBar(title = "设置", showBack = true)
         }
     ) { paddingValues ->
         Column(
@@ -103,136 +79,101 @@ fun SettingsScreen(configManager: ConfigManager) {
                 .fillMaxSize()
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            OutlinedTextField(
+            // 每首歌最多播放次数
+            HyperOsTextField(
                 value = maxPlayCount,
                 onValueChange = { maxPlayCount = it },
                 label = { Text("每首歌最多播放次数") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
             )
             Text(
                 "1 = 只播 1 次就跳过；-1 = 不限制",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 4.dp)
             )
 
-            OutlinedTextField(
+            // 重复间隔
+            HyperOsTextField(
                 value = repeatInterval,
                 onValueChange = { repeatInterval = it },
                 label = { Text("重复间隔（秒）") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
             )
             Text(
                 "距上次播放需间隔的秒数；-1 = 不限制",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 4.dp)
             )
 
-            OutlinedTextField(
+            // 歌单总歌曲数
+            HyperOsTextField(
                 value = totalPlaylistSize,
                 onValueChange = { totalPlaylistSize = it },
                 label = { Text("歌单总歌曲数（可选）") },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
+                singleLine = true,
             )
             Text(
                 "歌单本轮播完后自动清空历史；-1 = 不启用",
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 4.dp)
             )
 
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text("调试模式", style = MaterialTheme.typography.titleMedium)
-                        Text(
-                            "开启后跳过歌曲时弹出通知",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    Switch(checked = debugMode, onCheckedChange = { debugMode = it })
-                }
+            // 调试模式开关
+            HyperOsSettingRow(
+                title = "调试模式",
+                description = "开启后跳过歌曲时弹出通知",
+            ) {
+                Switch(checked = debugMode, onCheckedChange = { debugMode = it })
             }
 
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text("车载音乐兼容", style = MaterialTheme.typography.titleMedium)
-                        Text(
-                            "开启后仅使用歌手名作为歌曲标识",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    Switch(checked = carMode, onCheckedChange = { carMode = it })
-                }
+            // 车载音乐兼容开关
+            HyperOsSettingRow(
+                title = "车载音乐兼容",
+                description = "开启后仅使用歌手名作为歌曲标识",
+            ) {
+                Switch(checked = carMode, onCheckedChange = { carMode = it })
             }
 
-            // ── 选择监听的应用 ──
-            Card(
-                modifier = Modifier.fillMaxWidth(),
+            // 选择监听的应用
+            HyperOsSectionCard(
                 onClick = {
                     context.startActivity(Intent(context, AppSelectActivity::class.java))
-                }) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text("选择监听的应用", style = MaterialTheme.typography.titleMedium)
-                        Text(
-                            if (selectedCount == 0) "未选择（不监听任何应用）"
-                            else "已选择 $selectedCount 个应用",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                }
+            ) {
+                Column {
+                    Text("选择监听的应用", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        if (selectedCount == 0) "未选择（不监听任何应用）"
+                        else "已选择 $selectedCount 个应用",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
                 }
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            OutlinedButton(
-                onClick = {
-                    context.startActivity(Intent(context, DebugActivity::class.java))
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            HyperOsSecondaryButton(onClick = {
+                context.startActivity(Intent(context, DebugActivity::class.java))
+            }) {
                 Text("通知调试")
             }
 
-            Button(
-                onClick = {
-                    configManager.maxPlayCount = maxPlayCount.toIntOrDefault(1)
-                    configManager.repeatIntervalSeconds = repeatInterval.toIntOrDefault(-1)
-                    configManager.setTotalPlaylistSize(totalPlaylistSize.toIntOrDefault(-1))
-                    configManager.setDebugMode(debugMode)
-                    configManager.setCarMode(carMode)
+            HyperOsPrimaryButton(onClick = {
+                configManager.maxPlayCount = maxPlayCount.toIntOrDefault(1)
+                configManager.repeatIntervalSeconds = repeatInterval.toIntOrDefault(-1)
+                configManager.setTotalPlaylistSize(totalPlaylistSize.toIntOrDefault(-1))
+                configManager.setDebugMode(debugMode)
+                configManager.setCarMode(carMode)
 
-                    (context as? android.app.Activity)?.finish()
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
+                (context as? android.app.Activity)?.finish()
+            }) {
                 Text("保存设置")
             }
         }

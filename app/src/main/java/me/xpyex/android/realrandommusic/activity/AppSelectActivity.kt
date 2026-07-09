@@ -1,6 +1,5 @@
 package me.xpyex.android.realrandommusic.activity
 
-import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -11,35 +10,17 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.unit.dp
-import me.xpyex.android.realrandommusic.ui.BackNavigationIcon
+import me.xpyex.android.realrandommusic.ui.HyperOsTextField
+import me.xpyex.android.realrandommusic.ui.HyperOsTopBar
 import me.xpyex.android.realrandommusic.ui.theme.RealRandomMusicTheme
 import me.xpyex.android.realrandommusic.util.ConfigManager
 
@@ -107,7 +88,6 @@ class AppSelectActivity : ComponentActivity() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppSelectScreen(apps: List<AppInfo>, configManager: ConfigManager) {
     val whitelist = remember { configManager.getWhitelist() }
@@ -121,16 +101,13 @@ fun AppSelectScreen(apps: List<AppInfo>, configManager: ConfigManager) {
         if (searchQuery.isBlank()) apps
         else apps.filter {
             it.appName.contains(searchQuery, ignoreCase = true)
-                || it.packageName.contains(searchQuery, ignoreCase = true)
+                    || it.packageName.contains(searchQuery, ignoreCase = true)
         }
     }
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("选择监听的应用") },
-                navigationIcon = { BackNavigationIcon() }
-            )
+            HyperOsTopBar(title = "选择监听的应用", showBack = true)
         }
     ) { padding ->
         if (apps.isEmpty()) {
@@ -149,14 +126,12 @@ fun AppSelectScreen(apps: List<AppInfo>, configManager: ConfigManager) {
                     .padding(padding)
             ) {
                 item {
-                    OutlinedTextField(
+                    HyperOsTextField(
                         value = searchQuery,
                         onValueChange = { searchQuery = it },
                         placeholder = { Text("搜索应用名或包名") },
                         singleLine = true,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
                     )
                 }
                 item {
@@ -165,7 +140,7 @@ fun AppSelectScreen(apps: List<AppInfo>, configManager: ConfigManager) {
                         else "找到 ${filteredApps.size} 个应用",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp)
                     )
                 }
                 item {
@@ -173,7 +148,7 @@ fun AppSelectScreen(apps: List<AppInfo>, configManager: ConfigManager) {
                         "未勾选任何应用时，不监听音乐播放",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 4.dp)
                     )
                 }
                 items(filteredApps) { app ->
@@ -191,7 +166,7 @@ fun AppSelectScreen(apps: List<AppInfo>, configManager: ConfigManager) {
                                 }
                                 selected = newSelected
                             }
-                            .padding(horizontal = 16.dp, vertical = 10.dp),
+                            .padding(horizontal = 20.dp, vertical = 14.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Checkbox(
@@ -204,18 +179,21 @@ fun AppSelectScreen(apps: List<AppInfo>, configManager: ConfigManager) {
                                     configManager.removeFromWhitelist(app.packageName)
                                     selected = selected.minus(app.packageName).toMutableSet()
                                 }
-                            }
+                            },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = MaterialTheme.colorScheme.primary,
+                                uncheckedColor = MaterialTheme.colorScheme.outline,
+                            )
                         )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        // App 图标
+                        Spacer(modifier = Modifier.width(12.dp))
                         if (app.iconBitmap != null) {
                             Image(
                                 bitmap = app.iconBitmap.asImageBitmap(),
                                 contentDescription = null,
-                                modifier = Modifier.size(40.dp)
+                                modifier = Modifier.size(48.dp)
                             )
                         } else {
-                            Spacer(modifier = Modifier.size(40.dp))
+                            Spacer(modifier = Modifier.size(48.dp))
                         }
                         Spacer(modifier = Modifier.width(12.dp))
                         Column {

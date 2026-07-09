@@ -1,5 +1,6 @@
 package me.xpyex.android.realrandommusic.impl;
 
+import com.google.gson.annotations.SerializedName;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +11,9 @@ import lombok.Setter;
 @Setter
 @Getter
 public class SongPlayRecord {
+    @SerializedName("playCount")
     private int playCount;        // 播放次数
+    @SerializedName("lastPlayedTime")
     private long lastPlayedTime;  // 上次播放时间（毫秒时间戳）
 
     public SongPlayRecord() {

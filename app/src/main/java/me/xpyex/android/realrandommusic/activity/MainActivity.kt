@@ -7,38 +7,19 @@ import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import me.xpyex.android.realrandommusic.RrmApp
+import me.xpyex.android.realrandommusic.ui.HyperOsSecondaryButton
+import me.xpyex.android.realrandommusic.ui.HyperOsSectionCard
+import me.xpyex.android.realrandommusic.ui.HyperOsTopBar
 import me.xpyex.android.realrandommusic.ui.theme.RealRandomMusicTheme
 
 class MainActivity : ComponentActivity() {
@@ -71,7 +52,6 @@ fun openNotificationAccessSettings(context: Context) {
 
 // ── UI ──
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen() {
     val context = LocalContext.current
@@ -95,9 +75,7 @@ fun MainScreen() {
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            TopAppBar(
-                title = { Text("RealRandomMusic") }
-            )
+            HyperOsTopBar(title = "RealRandomMusic")
         }
     ) { paddingValues ->
         Column(
@@ -105,23 +83,18 @@ fun MainScreen() {
                 .fillMaxSize()
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             // 监听权限状态
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(
-                    containerColor = if (permissionGranted)
-                        MaterialTheme.colorScheme.primaryContainer
-                    else
-                        MaterialTheme.colorScheme.errorContainer
-                )
+            HyperOsSectionCard(
+                containerColor = if (permissionGranted)
+                    MaterialTheme.colorScheme.primaryContainer
+                else
+                    MaterialTheme.colorScheme.errorContainer
             ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -149,7 +122,8 @@ fun MainScreen() {
 
                     if (!permissionGranted) {
                         Button(
-                            onClick = { openNotificationAccessSettings(context) }
+                            onClick = { openNotificationAccessSettings(context) },
+                            shape = MaterialTheme.shapes.extraLarge,
                         ) {
                             Text("去授权")
                         }
@@ -162,11 +136,8 @@ fun MainScreen() {
                 style = MaterialTheme.typography.headlineSmall
             )
 
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
+            HyperOsSectionCard {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("功能说明", style = MaterialTheme.typography.titleMedium)
                     Text(
                         "• 自动检测重复播放的歌曲\n• 通过通知监控音乐播放\n• 兼容所有音乐软件",
@@ -175,11 +146,8 @@ fun MainScreen() {
                 }
             }
 
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
+            HyperOsSectionCard {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("统计信息", style = MaterialTheme.typography.titleMedium)
                     Text(
                         "已记录歌曲: $playedCount 首",
@@ -196,7 +164,12 @@ fun MainScreen() {
                             playedCount = 0
                             skippedCount = 0
                         },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = MaterialTheme.shapes.extraLarge,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.errorContainer,
+                            contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                        )
                     ) {
                         Text("清空历史记录")
                     }
@@ -208,7 +181,10 @@ fun MainScreen() {
                     paused = !paused
                     app.setPaused(paused)
                 },
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
+                shape = MaterialTheme.shapes.extraLarge,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = if (paused)
                         MaterialTheme.colorScheme.tertiary
@@ -219,19 +195,15 @@ fun MainScreen() {
                 Text(if (paused) "已暂停 — 点击继续" else "工作中 — 点击暂停")
             }
 
-            OutlinedButton(
-                onClick = {
-                    context.startActivity(Intent(context, SettingsActivity::class.java))
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            HyperOsSecondaryButton(onClick = {
+                context.startActivity(Intent(context, SettingsActivity::class.java))
+            }) {
                 Text("设置")
             }
 
-            Card(modifier = Modifier.fillMaxWidth()) {
-                Column(modifier = Modifier.padding(16.dp)) {
+            HyperOsSectionCard {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("使用提示", style = MaterialTheme.typography.titleMedium)
-                    Spacer(modifier = Modifier.height(8.dp))
                     Text(
                         "1. 首次使用需授权通知监听权限\n2. 打开任意音乐应用播放歌曲\n3. 检测到重复音乐时自动跳过\n4. 进入设置调整检测规则",
                         style = MaterialTheme.typography.bodySmall

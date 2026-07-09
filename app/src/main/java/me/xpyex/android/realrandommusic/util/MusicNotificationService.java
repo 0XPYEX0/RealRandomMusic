@@ -294,27 +294,7 @@ public class MusicNotificationService extends NotificationListenerService {
         }
         debouncePending = true;
         mainHandler.postDelayed(debouncedSync, 300);
-    }    private final MediaController.Callback mediaCallback = new MediaController.Callback() {
-        @Override
-        public void onSessionDestroyed() {
-            log("会话销毁: " +
-                    (activeController != null ? activeController.getPackageName() : "null"));
-            onNoActiveSession();
-        }
-
-        @Override
-        public void onPlaybackStateChanged(@Nullable PlaybackState state) {
-            log("播放状态变化: " + (state != null ? state.getState() : "null"));
-            syncFromActiveController();
-        }
-
-        @Override
-        public void onMetadataChanged(@Nullable MediaMetadata metadata) {
-            log("元数据变化: " + (metadata != null
-                                      ? metadata.getString(MediaMetadata.METADATA_KEY_TITLE) : "null"));
-            syncFromActiveController();
-        }
-    };
+    }
 
     /**
      * 实际处理：元数据已稳定
@@ -389,7 +369,27 @@ public class MusicNotificationService extends NotificationListenerService {
             return RrmApp.instance.configManager.getWhitelist();
         }
         return Collections.emptySet();
-    }
+    }    private final MediaController.Callback mediaCallback = new MediaController.Callback() {
+        @Override
+        public void onSessionDestroyed() {
+            log("会话销毁: " +
+                    (activeController != null ? activeController.getPackageName() : "null"));
+            onNoActiveSession();
+        }
+
+        @Override
+        public void onPlaybackStateChanged(@Nullable PlaybackState state) {
+            log("播放状态变化: " + (state != null ? state.getState() : "null"));
+            syncFromActiveController();
+        }
+
+        @Override
+        public void onMetadataChanged(@Nullable MediaMetadata metadata) {
+            log("元数据变化: " + (metadata != null
+                                      ? metadata.getString(MediaMetadata.METADATA_KEY_TITLE) : "null"));
+            syncFromActiveController();
+        }
+    };
 
     /**
      * 通用监听器通知 —— 消除 try-catch 遍历样板代码
@@ -410,17 +410,15 @@ public class MusicNotificationService extends NotificationListenerService {
         notifyListeners(l -> l.onSongChanged(info));
     }
 
-    // ── 从 MediaController 获取数据并分发 ──
-
     private void notifyPlaybackStateChanged(MusicPlaybackInfo info) {
         notifyListeners(l -> l.onPlaybackStateChanged(info));
     }
 
-    // ── 通知主线程回调 ──
-
     private void notifyPlaybackStopped() {
         notifyListeners(l -> l.onPlaybackStopped());
     }
+
+    // ── 从 MediaController 获取数据并分发 ──
 
     public interface MusicListener {
         void onSongChanged(@NonNull MusicPlaybackInfo info);
@@ -429,6 +427,8 @@ public class MusicNotificationService extends NotificationListenerService {
 
         void onPlaybackStopped();
     }
+
+    // ── 通知主线程回调 ──
 
 
 

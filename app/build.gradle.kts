@@ -12,7 +12,7 @@ android {
         applicationId = "me.xpyex.android.realrandommusic"
         minSdk = 31
         targetSdk = 35
-        versionCode = 2
+        versionCode = 3
         versionName = "v$versionCode"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
