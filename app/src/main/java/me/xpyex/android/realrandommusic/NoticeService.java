@@ -60,7 +60,7 @@ public class NoticeService extends Service {
                 }
             }
         };
-        IntentFilter filter = new IntentFilter("me.xpyex.android.realrandommusic.UPDATE_NOTIFICATION");
+        IntentFilter filter = new IntentFilter(getPackageName() + ".UPDATE_NOTIFICATION");
         registerReceiver(updateReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
 
         Log.i(TAG, "服务初始化完成");

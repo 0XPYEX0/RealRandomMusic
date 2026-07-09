@@ -26,6 +26,7 @@ public class RrmApp extends Application {
     public SongHistoryManager historyManager;
 
     private boolean paused;
+    private boolean firstSongAfterBoot = true;
     private String lastProcessedIdentifier;
 
     public boolean isPaused() {
@@ -93,12 +94,18 @@ public class RrmApp extends Application {
         boolean isRepeat = historyManager.checkAndRecord(identifier);
 
         if (isRepeat) {
-            Log.w(TAG, "重复歌曲，自动跳过: " + identifier);
-            MusicNotificationService.skipToNext(info.getPackageName());
+            // 启动后第一首歌放行（系统杀后自启时当前歌并非用户主动切到的）
+            if (firstSongAfterBoot) {
+                firstSongAfterBoot = false;
+                Log.w(TAG, "启动后第一首为重复但放行: " + identifier);
+            } else {
+                Log.w(TAG, "重复歌曲，自动跳过: " + identifier);
+                MusicNotificationService.skipToNext(info.getPackageName());
 
-            // 调试模式下发通知
-            if (configManager.isDebugMode()) {
-                sendSkipNotification(identifier);
+                // 调试模式下发通知
+                if (configManager.isDebugMode()) {
+                    sendSkipNotification(identifier);
+                }
             }
         }
 
@@ -117,7 +124,7 @@ public class RrmApp extends Application {
      * 发送广播更新 NoticeService 的前台通知
      */
     private void sendUpdateBroadcast(MusicPlaybackInfo info) {
-        Intent intent = new Intent("me.xpyex.android.realrandommusic.UPDATE_NOTIFICATION");
+        Intent intent = new Intent(getPackageName() + ".UPDATE_NOTIFICATION");
         intent.putExtra("title", info.getTitle());
         intent.putExtra("artist", info.getArtist() != null ? info.getArtist() : "");
         sendBroadcast(intent);

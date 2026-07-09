@@ -67,6 +67,12 @@ dependencies {
     compileOnly("org.projectlombok:lombok:1.18.30")
     annotationProcessor("org.projectlombok:lombok:1.18.30")
 
+    // MIUIX Compose（小米风格 UI）
+    implementation("top.yukonga.miuix.kmp:miuix-ui:0.9.3")
+
+    // Gson（JSON 序列化）
+    implementation("com.google.code.gson:gson:2.10.1")
+
     // 媒体会话支持
     implementation("androidx.media:media:1.6.0")
 
