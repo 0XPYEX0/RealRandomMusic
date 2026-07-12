@@ -39,25 +39,6 @@ public class SongHistoryManager {
     });
     @Getter
     public int skippedCount = 0;
-
-    // ── 当前播放标识（启动后放行用）──
-    private String currentSongIdentifier = null;
-
-    /**
-     * 获取上次保存时正在播放的歌曲标识，用于启动后判断是否放行。
-     */
-    public String getCurrentSongIdentifier() {
-        return currentSongIdentifier;
-    }
-
-    /**
-     * 记录当前正在播放的歌曲标识，持久化到 JSON。
-     */
-    public void setCurrentSongIdentifier(String identifier) {
-        this.currentSongIdentifier = identifier;
-        saveHistory();
-    }
-
     // ── 调试信息 ──
     @Getter
     public String lastLoadError = null;
@@ -67,11 +48,21 @@ public class SongHistoryManager {
     public long lastSaveTime = 0;
     @Getter
     public long fileSize = 0;
-
+    // ── 当前播放标识（启动后放行用）──
+    @Getter
+    private String currentSongIdentifier = null;
     public SongHistoryManager(Context context, ConfigManager configManager) {
         this.context = context;
         this.configManager = configManager;
         this.playedSongs = new ConcurrentHashMap<>(loadHistory());
+    }
+
+    /**
+     * 记录当前正在播放的歌曲标识，持久化到 JSON。
+     */
+    public void setCurrentSongIdentifier(String identifier) {
+        this.currentSongIdentifier = identifier;
+        saveHistory();
     }
 
     // ── 持久化 ──
@@ -103,8 +94,8 @@ public class SongHistoryManager {
     private void saveHistory() {
         saveExecutor.execute(() -> {
             PlayedData data = PlayedData.of()
-                .setCurrent(currentSongIdentifier)
-                .setSongs(new HashMap<>(playedSongs));
+                                  .setCurrent(currentSongIdentifier)
+                                  .setSongs(new HashMap<>(playedSongs));
             String json = gson.toJson(data);
             File file = new File(context.getFilesDir(), JSON_FILE);
             try {
@@ -125,13 +116,12 @@ public class SongHistoryManager {
      * @return true 表示应跳过（重复），false 表示允许播放
      */
     public boolean checkAndRecord(String songIdentifier) {
-        if (songIdentifier == null || songIdentifier.isEmpty()) {
+        if (songIdentifier == null || songIdentifier.trim().isEmpty()) {
             return false;
         }
 
         String key = songIdentifier.trim();
 
-        // 读
         SongPlayRecord existing = playedSongs.get(key);
 
         if (existing != null) {

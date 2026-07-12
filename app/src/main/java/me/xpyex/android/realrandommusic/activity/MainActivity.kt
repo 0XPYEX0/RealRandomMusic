@@ -23,12 +23,10 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import me.xpyex.android.realrandommusic.RrmApp
 import me.xpyex.android.realrandommusic.ui.HyperOsSecondaryButton
 import me.xpyex.android.realrandommusic.ui.HyperOsSectionCard
-import me.xpyex.android.realrandommusic.ui.HyperOsTopBar
 import me.xpyex.android.realrandommusic.ui.theme.RealRandomMusicTheme
 import me.xpyex.android.realrandommusic.util.MusicNotificationService
 
@@ -82,7 +80,11 @@ private fun CheckmarkCircle(
             lineTo(w * 0.43f, h * 0.70f)
             lineTo(w * 0.75f, h * 0.30f)
         }
-        drawPath(path, color = accentColor, style = Stroke(width = checkWidth, cap = StrokeCap.Round, join = StrokeJoin.Round))
+        drawPath(
+            path,
+            color = accentColor,
+            style = Stroke(width = checkWidth, cap = StrokeCap.Round, join = StrokeJoin.Round)
+        )
     }
 }
 
@@ -215,6 +217,7 @@ fun MainScreen() {
             subtitle = "点击授权",
             icon = StatusIcon.CROSS,
         )
+
         paused -> StatusButtonStyle(
             bgColor = Color(0xFFFFF0E0),
             accentColor = Color(0xFFE0883A),
@@ -222,6 +225,7 @@ fun MainScreen() {
             subtitle = "点击继续",
             icon = StatusIcon.PAUSE,
         )
+
         else -> StatusButtonStyle(
             bgColor = Color(0xFFDEF9E3),
             accentColor = Color(0xFF35D267),
@@ -358,11 +362,13 @@ fun MainScreen() {
                                 fillColor = statusStyle.bgColor,
                                 modifier = iconModifier,
                             )
+
                             StatusIcon.PAUSE -> PauseCircle(
                                 accentColor = statusStyle.accentColor,
                                 fillColor = statusStyle.bgColor,
                                 modifier = iconModifier,
                             )
+
                             StatusIcon.CROSS -> CrossCircle(
                                 accentColor = statusStyle.accentColor,
                                 fillColor = statusStyle.bgColor,

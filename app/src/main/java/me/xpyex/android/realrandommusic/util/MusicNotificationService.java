@@ -369,6 +369,21 @@ public class MusicNotificationService extends NotificationListenerService {
             return RrmApp.instance.configManager.getWhitelist();
         }
         return Collections.emptySet();
+    }
+
+    /**
+     * 通用监听器通知 —— 消除 try-catch 遍历样板代码
+     */
+    private void notifyListeners(Consumer<MusicListener> action) {
+        mainHandler.post(() -> {
+            for (MusicListener l : listeners) {
+                try {
+                    action.accept(l);
+                } catch (Exception e) {
+                    Log.e(TAG, "回调异常", e);
+                }
+            }
+        });
     }    private final MediaController.Callback mediaCallback = new MediaController.Callback() {
         @Override
         public void onSessionDestroyed() {
@@ -391,21 +406,6 @@ public class MusicNotificationService extends NotificationListenerService {
         }
     };
 
-    /**
-     * 通用监听器通知 —— 消除 try-catch 遍历样板代码
-     */
-    private void notifyListeners(Consumer<MusicListener> action) {
-        mainHandler.post(() -> {
-            for (MusicListener l : listeners) {
-                try {
-                    action.accept(l);
-                } catch (Exception e) {
-                    Log.e(TAG, "回调异常", e);
-                }
-            }
-        });
-    }
-
     private void notifySongChanged(MusicPlaybackInfo info) {
         notifyListeners(l -> l.onSongChanged(info));
     }
@@ -418,8 +418,6 @@ public class MusicNotificationService extends NotificationListenerService {
         notifyListeners(l -> l.onPlaybackStopped());
     }
 
-    // ── 从 MediaController 获取数据并分发 ──
-
     public interface MusicListener {
         void onSongChanged(@NonNull MusicPlaybackInfo info);
 
@@ -428,9 +426,11 @@ public class MusicNotificationService extends NotificationListenerService {
         void onPlaybackStopped();
     }
 
+    // ── 从 MediaController 获取数据并分发 ──
+
+
+
     // ── 通知主线程回调 ──
-
-
 
 
 }

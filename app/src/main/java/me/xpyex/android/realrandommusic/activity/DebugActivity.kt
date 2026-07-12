@@ -28,8 +28,7 @@ import me.xpyex.android.realrandommusic.ui.HyperOsTopBar
 import me.xpyex.android.realrandommusic.ui.theme.RealRandomMusicTheme
 import me.xpyex.android.realrandommusic.util.MusicNotificationService
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
 class DebugActivity : ComponentActivity() {
 
