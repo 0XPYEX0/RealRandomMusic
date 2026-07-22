@@ -83,6 +83,18 @@ public class SongHistoryManager {
             }
             Map<String, SongPlayRecord> songs = playedData != null ? playedData.getSongs() : null;
             lastLoadError = null;
+
+            // 清理无效 key（不含 "-" 的，切歌瞬间残缺数据导致）
+            if (songs != null && !songs.isEmpty()) {
+                int before = songs.size();
+                songs.entrySet().removeIf(e -> !e.getKey().contains("-"));
+                int removed = before - songs.size();
+                if (removed > 0) {
+                    Log.w(TAG, "启动清理无效key: " + removed + " 条 (不含\"-\")");
+                    saveHistory(); // 立即持久化清理后的结果
+                }
+            }
+
             return songs != null ? songs : new HashMap<>();
         } catch (Exception e) {
             lastLoadError = (e.getMessage() != null) ? e.getMessage() : e.getClass().getSimpleName();
@@ -121,6 +133,12 @@ public class SongHistoryManager {
         }
 
         String key = songIdentifier.trim();
+
+        // 不包含 "-" 的 key 为无效数据（切歌瞬间 title/artist 不完整导致），直接忽略
+        if (!key.contains("-")) {
+            Log.w(TAG, "忽略无效key(无\"-\"): " + key);
+            return false;
+        }
 
         SongPlayRecord existing = playedSongs.get(key);
 

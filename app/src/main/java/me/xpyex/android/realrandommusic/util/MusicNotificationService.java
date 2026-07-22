@@ -56,6 +56,7 @@ public class MusicNotificationService extends NotificationListenerService {
     private MusicPlaybackInfo currentPlayback;
     private String lastSongIdentifier = "";
     private boolean debouncePending;
+    private long sessionSwitchTime; // 会话切换时间戳，用于冷却期判断
     private final Runnable debouncedSync = this::doDebouncedSync;
 
     // ── 回调接口 ──
@@ -265,8 +266,17 @@ public class MusicNotificationService extends NotificationListenerService {
     private void switchToController(@NonNull MediaController controller) {
         unbindController();
         activeController = controller;
+        sessionSwitchTime = System.currentTimeMillis();
         controller.registerCallback(mediaCallback);
         syncFromActiveController();
+    }
+
+    /**
+     * 会话切换后的冷却期（3 秒）。
+     * 音乐 App 刚打开/切换时元数据剧烈抖动，此时不应触发切歌回调。
+     */
+    private boolean isInSessionCooldown() {
+        return System.currentTimeMillis() - sessionSwitchTime < 3000;
     }
 
     private void unbindController() {
@@ -332,6 +342,9 @@ public class MusicNotificationService extends NotificationListenerService {
         if (currentPlayback != null) {
             builder.previousProgressPercent = currentPlayback.getProgressPercent();
         }
+
+        // 会话切换后 3 秒内为冷却期，此时元数据可能剧烈抖动
+        builder.sessionCooldown = isInSessionCooldown();
 
         MusicPlaybackInfo info = builder.build();
 

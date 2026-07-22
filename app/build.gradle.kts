@@ -1,7 +1,16 @@
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
+}
+
+// 读取签名配置（keystore.properties 不在版本控制中）
+val keystorePropertiesFile = rootProject.file("keystore.properties")
+val keystoreProperties = Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(keystorePropertiesFile.inputStream())
 }
 
 android {
@@ -12,10 +21,21 @@ android {
         applicationId = "me.xpyex.android.realrandommusic"
         minSdk = 31
         targetSdk = 35
-        versionCode = 4
+        versionCode = 5
         versionName = "v$versionCode"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        create("release") {
+            if (keystorePropertiesFile.exists()) {
+                storeFile = rootProject.file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+            }
+        }
     }
 
     buildTypes {
@@ -24,8 +44,11 @@ android {
             isShrinkResources = true  // 开启资源压缩
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
 
-            // 使用debug签名（仅用于测试，正式发布需要配置正式签名）
-            signingConfig = signingConfigs.getByName("debug")
+            // 使用正式签名（如果 keystore.properties 存在），否则回退 debug 签名
+            signingConfig = if (keystorePropertiesFile.exists())
+                signingConfigs.getByName("release")
+            else
+                signingConfigs.getByName("debug")
         }
     }
     // APK 输出文件名

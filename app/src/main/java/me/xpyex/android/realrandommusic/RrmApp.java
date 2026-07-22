@@ -92,6 +92,14 @@ public class RrmApp extends Application {
         }
         lastProcessedIdentifier = identifier;
 
+        // 会话刚切换（音乐App刚打开/切换），元数据剧烈抖动，只记录不切歌
+        if (info.isSessionCooldown()) {
+            Log.i(TAG, "会话冷却期，只记录不切歌: " + identifier);
+            historyManager.setCurrentSongIdentifier(identifier);
+            sendUpdateBroadcast(info);
+            return;
+        }
+
         // 判断上一首歌是否自然播完
         // previousProgressPercent: -1=无上一首(刚启动), ≥0.9=自然播完, <0.9=用户手动切歌
         float prevProgress = info.getPreviousProgressPercent();

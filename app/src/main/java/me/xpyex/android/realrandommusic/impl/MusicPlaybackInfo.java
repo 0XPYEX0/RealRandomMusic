@@ -26,6 +26,7 @@ public class MusicPlaybackInfo {
 
     // ── 切歌判定 ──
     public final float previousProgressPercent; // 上一首歌的播放进度 (-1=无上一首/未知)
+    public final boolean sessionCooldown;       // 会话刚切换，元数据可能抖动中
 
     // ── 来源信息 ──
     public final String packageName;   // 播放器包名
@@ -46,6 +47,7 @@ public class MusicPlaybackInfo {
         this.playbackSpeed = builder.playbackSpeed;
         this.stateCode = builder.stateCode;
         this.previousProgressPercent = builder.previousProgressPercent;
+        this.sessionCooldown = builder.sessionCooldown;
         this.packageName = builder.packageName;
         this.appName = builder.appName;
         this.eventTimestamp = builder.eventTimestamp;
@@ -142,6 +144,7 @@ public class MusicPlaybackInfo {
         public String appName;
         public long eventTimestamp = System.currentTimeMillis();
         public float previousProgressPercent = -1f;
+        public boolean sessionCooldown;
         public String mediaId;
         public int trackNumber;
 

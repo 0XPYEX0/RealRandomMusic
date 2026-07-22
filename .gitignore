@@ -3,3 +3,7 @@
 /build/
 /.idea/
 /.kotlin/
+
+# 签名文件（机密，不可提交）
+keystore.properties
+*.jks
