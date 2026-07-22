@@ -328,6 +328,11 @@ public class MusicNotificationService extends NotificationListenerService {
             builder.fromPlaybackState(state);
         }
 
+        // 计算上一首歌的播放进度，用于判断是自然播完还是用户手动切歌
+        if (currentPlayback != null) {
+            builder.previousProgressPercent = currentPlayback.getProgressPercent();
+        }
+
         MusicPlaybackInfo info = builder.build();
 
         if (info.getTitle() == null) {

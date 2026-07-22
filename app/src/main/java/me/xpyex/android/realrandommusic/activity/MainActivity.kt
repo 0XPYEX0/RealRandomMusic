@@ -23,12 +23,14 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import me.xpyex.android.realrandommusic.RrmApp
 import me.xpyex.android.realrandommusic.ui.HyperOsSecondaryButton
 import me.xpyex.android.realrandommusic.ui.HyperOsSectionCard
 import me.xpyex.android.realrandommusic.ui.theme.RealRandomMusicTheme
 import me.xpyex.android.realrandommusic.util.MusicNotificationService
+import androidx.core.net.toUri
 
 class MainActivity : ComponentActivity() {
 
@@ -447,7 +449,7 @@ fun MainScreen() {
                                     MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurface,
                                 maxLines = 3,
-                                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                                overflow = TextOverflow.Ellipsis,
                             )
                         }
                     }
@@ -494,7 +496,7 @@ fun MainScreen() {
             // ── GitHub ──
             Card(
                 onClick = {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/XPYEX/RealRandomMusic"))
+                    val intent = Intent(Intent.ACTION_VIEW, "https://github.com/0XPYEX0/RealRandomMusic".toUri())
                     context.startActivity(intent)
                 },
                 modifier = Modifier.fillMaxWidth(),
