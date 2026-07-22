@@ -298,7 +298,7 @@ fun MainScreen() {
                 }
             }
         },
-        containerColor = Color(0xFFF5F5F5),  // 淡淡淡灰背景
+        containerColor = MaterialTheme.colorScheme.background,
     ) { paddingValues ->
         Column(
             modifier = Modifier
@@ -390,7 +390,7 @@ fun MainScreen() {
                     // 上方矩形：已记录歌曲（三击清空历史）
                     HyperOsSectionCard(
                         modifier = Modifier.weight(1f),
-                        containerColor = Color.White,
+                        containerColor = MaterialTheme.colorScheme.surface,
                         onClick = {
                             clearTapCount++
                             if (clearTapCount >= 3) {
@@ -429,7 +429,7 @@ fun MainScreen() {
                     // 下方矩形：当前播放
                     HyperOsSectionCard(
                         modifier = Modifier.weight(1f),
-                        containerColor = Color.White,
+                        containerColor = MaterialTheme.colorScheme.surface,
                     ) {
                         Column(
                             modifier = Modifier.fillMaxWidth(),
@@ -457,28 +457,9 @@ fun MainScreen() {
             }
 
             // ════════════════════════════════════════════
-            // 底部按钮
-            // ════════════════════════════════════════════
-            HyperOsSecondaryButton(
-                onClick = {
-                    context.startActivity(Intent(context, SettingsActivity::class.java))
-                },
-                containerColor = Color.White,
-            ) {
-                Text("⚙ 设置")
-            }
-
-            HyperOsSecondaryButton(
-                onClick = { showAboutDialog = true },
-                containerColor = Color.White,
-            ) {
-                Text("ℹ 关于")
-            }
-
-            // ════════════════════════════════════════════
             // 使用提示
             // ════════════════════════════════════════════
-            HyperOsSectionCard {
+            HyperOsSectionCard(containerColor = MaterialTheme.colorScheme.surface) {
                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("使用提示", style = MaterialTheme.typography.titleMedium)
                     Text(
@@ -493,6 +474,25 @@ fun MainScreen() {
                 }
             }
 
+            // ════════════════════════════════════════════
+            // 底部按钮
+            // ════════════════════════════════════════════
+            HyperOsSecondaryButton(
+                onClick = {
+                    context.startActivity(Intent(context, SettingsActivity::class.java))
+                },
+                containerColor = MaterialTheme.colorScheme.surface,
+            ) {
+                Text("⚙ 设置")
+            }
+
+            HyperOsSecondaryButton(
+                onClick = { showAboutDialog = true },
+                containerColor = MaterialTheme.colorScheme.surface,
+            ) {
+                Text("ℹ 关于")
+            }
+
             // ── GitHub ──
             Card(
                 onClick = {
@@ -501,7 +501,7 @@ fun MainScreen() {
                 },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp),
             ) {
                 Row(
@@ -524,7 +524,7 @@ fun MainScreen() {
                 },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(18.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.5.dp),
             ) {
                 Row(

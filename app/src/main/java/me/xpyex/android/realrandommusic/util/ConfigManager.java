@@ -19,6 +19,7 @@ public class ConfigManager {
     private static final String KEY_REPEAT_INTERVAL_SECONDS = "RepeatIntervalSeconds";
     private static final String KEY_TOTAL_PLAYLIST_SIZE = "TotalPlaylistSize";
     private static final String KEY_PAUSED = "Paused";
+    private static final String KEY_ALLOW_MANUAL_SKIP = "AllowManualSkip";
 
     private final SharedPreferences preferences;
 
@@ -152,5 +153,19 @@ public class ConfigManager {
      */
     public void setPaused(boolean paused) {
         preferences.edit().putBoolean(KEY_PAUSED, paused).apply();
+    }
+
+    /**
+     * 是否允许手动跳过（通过歌曲播放进度判断自动切歌，手动切歌则不跳过）
+     */
+    public boolean isAllowManualSkip() {
+        return preferences.getBoolean(KEY_ALLOW_MANUAL_SKIP, false);
+    }
+
+    /**
+     * 设置是否允许手动跳过
+     */
+    public void setAllowManualSkip(boolean enabled) {
+        preferences.edit().putBoolean(KEY_ALLOW_MANUAL_SKIP, enabled).apply();
     }
 }

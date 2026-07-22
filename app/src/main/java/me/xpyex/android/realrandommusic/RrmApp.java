@@ -100,22 +100,23 @@ public class RrmApp extends Application {
             return;
         }
 
-        // 判断上一首歌是否自然播完
+        // 判断上一首歌是否自然播完（仅在"允许手动跳过"开启时生效）
         // previousProgressPercent: -1=无上一首(刚启动), ≥0.9=自然播完, <0.9=用户手动切歌
-        float prevProgress = info.getPreviousProgressPercent();
-        boolean naturalEnd = prevProgress < 0 || prevProgress >= 0.9f;
+        if (configManager.isAllowManualSkip()) {
+            float prevProgress = info.getPreviousProgressPercent();
+            boolean naturalEnd = prevProgress < 0 || prevProgress >= 0.9f;
 
-        if (!naturalEnd) {
-            // 用户手动切歌 → 不检测重复，直接放行
-            Log.i(TAG, "用户切歌，跳过检测: " + identifier
-                    + " (上一首进度=" + (int) (prevProgress * 100) + "%)");
-            historyManager.setCurrentSongIdentifier(identifier);
-            sendUpdateBroadcast(info);
-            return;
+            if (!naturalEnd) {
+                // 用户手动切歌 → 不检测重复，直接放行
+                Log.i(TAG, "用户切歌，跳过检测: " + identifier
+                        + " (上一首进度=" + (int) (prevProgress * 100) + "%)");
+                historyManager.setCurrentSongIdentifier(identifier);
+                sendUpdateBroadcast(info);
+                return;
+            }
         }
 
-        Log.i(TAG, "检测到歌曲: " + identifier + " | 来源: " + info.getPackageName()
-                + (prevProgress >= 0 ? " | 上一首播完(" + (int) (prevProgress * 100) + "%)" : " | 首次启动"));
+        Log.i(TAG, "检测到歌曲: " + identifier + " | 来源: " + info.getPackageName());
 
         // 查重
         boolean isRepeat = historyManager.checkAndRecord(identifier);
